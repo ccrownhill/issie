@@ -48,7 +48,12 @@ module.exports = {
       {
         test: /\.(png|jpe?g|gif|svg|eot|ttf|woff|woff2)$/,
         use: ['file-loader'],
-      }
+      },
+
+      {
+        test: /\.worker\.js$/,
+        use: { loader: "worker-loader" },
+      },
     ]
   },
   plugins: [

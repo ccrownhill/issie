@@ -181,4 +181,9 @@ module Breadcrumbs =
             []
             dispatch
 
-        
+
+module Workers =
+    open Feliz.UseWorker
+
+    let testWorkers() =
+        printfn "testing web workers"
