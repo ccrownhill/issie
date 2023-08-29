@@ -17,6 +17,7 @@ open CommonTypes
 open Fable.Core
 open Fable.Core.JsInterop
 open Browser.Dom
+open Feliz.UseWorker
 
 
 
@@ -118,6 +119,9 @@ let init() = {
     Pending = []
     UIState = None
     BuildVisible = false
+    Count = 0
+    Worker = None
+    WorkerState = WorkerStatus.Pending
 }
 
 

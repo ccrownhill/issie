@@ -15,6 +15,7 @@ open Fable.React
 open VerilogTypes
 open Optics
 open Optics.Operators
+open Feliz.UseWorker
 
 module Constants =
     /// waveform simulator constant here for WSHelpers.initialWSModel reference
@@ -426,6 +427,12 @@ type Msg =
     | SendSeqMsgAsynch of seq<Msg>
     | ContextMenuAction of e: Browser.Types.MouseEvent
     | ContextMenuItemClick of menuType:string * item:string * dispatch: (Msg -> unit)
+    | ChangeWorkerState of WorkerStatus
+    | ExecuteWorker
+    | KillWorker
+    | RestartWorker
+    | SetWorker of Worker<unit,int>
+    | WorkerResult of int
 
 
 //================================//
@@ -499,7 +506,8 @@ let algebraIns_ = Lens.create (fun a -> a.AlgebraIns) (fun s a -> {a with Algebr
 let gridCache_ = Lens.create (fun a -> a.GridCache) (fun s a -> {a with GridCache = s})
 
 
-type Model = {
+type Model =
+    {
     UserData: UserData
     /// Map of sheet name to WaveSimModel
     WaveSim : Map<string, WaveSimModel>
@@ -576,13 +584,20 @@ type Model = {
     UIState: UICommandType Option
     /// if true the "build" tab appears on the RHS
     BuildVisible: bool
-} 
+    Count: int
+    Worker: Worker<unit,int> option
+    WorkerState: WorkerStatus
+}
 
-    with member this.WaveSimOrCurrentSheet =
+    with
+        member this.WaveSimOrCurrentSheet =
             match this.WaveSimSheet, this.CurrentProj with
             | None, Some {OpenFileName = name} -> name
             | Some name, _ -> name
             | None, None -> failwithf "What? Project is not open cannot guess sheet!"
+        interface System.IDisposable with
+            member this.Dispose () =
+                this.Worker |> Option.iter (fun w -> w.Dispose())
 
 let waveSimSheet_ = Lens.create (fun a -> a.WaveSimSheet) (fun s a -> {a with WaveSimSheet = s})
 let waveSim_ = Lens.create (fun a -> a.WaveSim) (fun s a -> {a with WaveSim = s})

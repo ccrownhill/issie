@@ -160,8 +160,8 @@ let fileMenu (dispatch) =
             makeDebugItem "Trace long times" None
                 (fun _ -> TimeHelpers.instrumentation <- TimeHelpers.ImmediatePrint(20.,20.)
                           if debugTraceUI = Set.ofList [] then debugTraceUI <- Set.ofList ["update";"view"])
-            makeDebugItem "Test web workers" None
-                (fun _ -> Playground.Workers.testWorkers())
+            // makeDebugItem "Test web workers" None
+            //     (fun _ -> Playground.WorkerTest.testWorkers())
             makeDebugItem "Test Fonts" None
                 (fun _ -> Playground.TestFonts.makeTextPopup dispatch)
             makeWinDebugItem  "Run performance check" None
@@ -342,7 +342,7 @@ type Messages = ModelType.Msg
 
 let init() =
     JSHelpers.setDebugLevel()
-    DiagramMainView.init(), Cmd.none
+    DiagramMainView.init(), Cmd.Worker.create Workers.Sort.sortNumbers SetWorker ChangeWorkerState
 
 
 // -- Create View

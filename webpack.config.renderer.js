@@ -51,7 +51,7 @@ module.exports = {
       },
 
       {
-        test: /\.worker\.js$/,
+        test: /Sort\.fs\.js$/,
         use: { loader: "worker-loader" },
       },
     ]

@@ -579,6 +579,19 @@ let update (msg : Msg) oldModel =
 
     | JSDiagramMsg _ | KeyboardShortcutMsg _ -> // catch all messages not otherwise processed. Should remove this?
         model, Cmd.none
+    
+    | ChangeWorkerState workerState ->
+        { model with WorkerState = workerState }, Cmd.none
+    | ExecuteWorker ->
+        model, Cmd.Worker.exec model.Worker () WorkerResult
+    | KillWorker ->
+        model, Cmd.Worker.kill model.Worker
+    | RestartWorker ->
+        model, Cmd.Worker.restart model.Worker
+    | SetWorker worker ->
+        { model with Worker = Some worker }, Cmd.none
+    | WorkerResult i ->
+        { model with Count = i }, Cmd.none
 
     // post-processing of update function (Model * Cmd<Msg>)
     |> map fst_ (fun model' -> resetDialogIfSelectionHasChanged model' oldModel)
